@@ -1,11 +1,7 @@
 import ProductsList from "@/presentation/products/components/ProductList";
 import { useProducts } from "@/presentation/products/hooks/useProducts";
-import { ThemedText } from "@/presentation/theme/components/ThemedText";
-import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 import { ActivityIndicator, View } from "react-native";
 const HomeScreen = () => {
-  const primary = useThemeColor({}, "primary");
-
   const { productsQuery, loadNextPage } = useProducts();
 
   if (productsQuery.isLoading) {
