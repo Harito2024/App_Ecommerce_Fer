@@ -1,31 +1,31 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
   ScrollView,
   useWindowDimensions,
   View,
-} from 'react-native';
+} from "react-native";
 
-import { router } from 'expo-router';
+import { router } from "expo-router";
 
-import ThemedButton from '@/presentation/theme/components/ThemedButton';
-import ThemedLink from '@/presentation/theme/components/ThemedLink';
-import { ThemedText } from '@/presentation/theme/components/ThemedText';
-import ThemedTextInput from '@/presentation/theme/components/ThemedTextInput';
-import { useThemeColor } from '@/presentation/theme/hooks/useThemeColor';
-import { useAuthStore } from '@/presentation/auth/store/useAuthStore';
+import ThemedButton from "@/presentation/theme/components/ThemedButton";
+import ThemedLink from "@/presentation/theme/components/ThemedLink";
+import { ThemedText } from "@/presentation/theme/components/ThemedText";
+import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
+import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
+import { useAuthStore } from "@/presentation/auth/store/useAuthStore";
 
 const LoginScreen = () => {
   const { login } = useAuthStore();
 
   const { height } = useWindowDimensions();
-  const backgroundColor = useThemeColor({}, 'background');
+  const backgroundColor = useThemeColor({}, "background");
 
   const [isPosting, setIsPosting] = useState(false);
   const [form, setForm] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const onLogin = async () => {
@@ -42,11 +42,11 @@ const LoginScreen = () => {
     setIsPosting(false);
 
     if (wasSuccessful) {
-      router.replace('/');
+      router.replace("/");
       return;
     }
 
-    Alert.alert('Error', 'Usuario o contraseña no son correctos');
+    Alert.alert("Error", "Usuario o contraseña no son correctos");
   };
 
   return (
@@ -63,7 +63,7 @@ const LoginScreen = () => {
           }}
         >
           <ThemedText type="title">Ingresar</ThemedText>
-          <ThemedText style={{ color: 'grey' }}>
+          <ThemedText style={{ color: "grey" }}>
             Por favor ingrese para continuar
           </ThemedText>
         </View>
@@ -107,9 +107,9 @@ const LoginScreen = () => {
         {/* Enlace a registro */}
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <ThemedText>¿No tienes cuenta?</ThemedText>
