@@ -20,7 +20,7 @@ const ProductImages = ({ images }: Props) => {
       </View>
     );
   }
-  console.log(images[0]);
+
   return (
     <FlatList
       data={images}

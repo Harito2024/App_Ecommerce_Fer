@@ -40,4 +40,5 @@ async function createProduct(product: Partial<Product>) {
   } catch (error) {
     throw new Error('Error al actualizar el producto');
   }
+  
 }

@@ -1,7 +1,7 @@
+import { useState } from "react";
+import { FlatList, RefreshControl } from "react-native";
 import { Product } from "@/core/products/interface/product.interface";
 import ProductCard from "./ProductCard";
-import { FlatList, RefreshControl } from "react-native";
-import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
