@@ -1,33 +1,50 @@
 import { useEffect } from "react";
 import {
   View,
-  Text,
   KeyboardAvoidingView,
   ScrollView,
   Platform,
   ActivityIndicator,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Redirect, useLocalSearchParams, useNavigation } from "expo-router";
+import {
+  Redirect,
+  router,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import { ThemedView } from "@/presentation/theme/components/ThemedView";
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput";
 import { useProduct } from "@/presentation/products/hooks/useProduct";
 import ProductImages from "@/presentation/products/components/ProductImages";
-//import ThemeButtonGroup from '@/presentation/theme/components/ThemedButtonGroup';
+import ThemeButtonGroup from "@/presentation/theme/components/ThemedButtonGroup";
 import ThemedButton from "@/presentation/theme/components/ThemedButton";
 import { Formik } from "formik";
 import { Size } from "@/core/products/interface/product.interface";
-import ThemedButtonGroup from "@/presentation/theme/components/ThemedButtonGroup";
+import MenuIconButton from "@/presentation/theme/components/MenuIconButton";
+import { useCameraStore } from "@/presentation/store/useCameraStore";
 
 const ProductScreen = () => {
+  const { selectedImages, clearImages } = useCameraStore();
+
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
 
   const { productQuery, productMutation } = useProduct(`${id}`);
 
   useEffect(() => {
+    return () => {
+      clearImages();
+    };
+  }, []);
+
+  useEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Ionicons name="camera-outline" size={25} />,
+      headerRight: () => (
+        <MenuIconButton
+          onPress={() => router.push("/camera")}
+          icon="camera-outline"
+        />
+      ),
     });
   }, []);
 
@@ -60,7 +77,7 @@ const ProductScreen = () => {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <ScrollView>
-            <ProductImages images={values.images} />
+            <ProductImages images={[...product.images, ...selectedImages]} />
 
             <ThemedView style={{ marginHorizontal: 10, marginTop: 20 }}>
               <ThemedTextInput
@@ -114,7 +131,7 @@ const ProductScreen = () => {
                 marginHorizontal: 10,
               }}
             >
-              <ThemedButtonGroup
+              <ThemeButtonGroup
                 options={["XS", "S", "M", "L", "XL", "XXL", "XXXL"]}
                 selectedOptions={values.sizes}
                 onSelect={(selectedSize) => {
@@ -128,7 +145,7 @@ const ProductScreen = () => {
                 }}
               />
 
-              <ThemedButtonGroup
+              <ThemeButtonGroup
                 options={["kid", "men", "women", "unisex"]}
                 selectedOptions={[values.gender]}
                 onSelect={(selectedOption) =>
