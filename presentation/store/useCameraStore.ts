@@ -16,4 +16,3 @@ export const useCameraStore = create<TemporalCameraStoreState>()((set) => ({
 
   clearImages: () => set({ selectedImages: [] }),
 }));
-

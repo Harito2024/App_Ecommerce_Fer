@@ -5,6 +5,7 @@ import {
   ScrollView,
   Platform,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import {
   Redirect,
@@ -71,12 +72,29 @@ const ProductScreen = () => {
   const product = productQuery.data!;
 
   return (
-    <Formik initialValues={product} onSubmit={productMutation.mutate}>
+    <Formik
+      initialValues={product}
+      onSubmit={(productLike) =>
+        productMutation.mutate({
+          ...productLike,
+          images: [...productLike.images, ...selectedImages],
+        })
+      }
+    >
       {({ values, handleSubmit, handleChange, setFieldValue }) => (
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={productQuery.isFetching}
+                onRefresh={async () => {
+                  await productQuery.refetch();
+                }}
+              />
+            }
+          >
             <ProductImages images={[...product.images, ...selectedImages]} />
 
             <ThemedView style={{ marginHorizontal: 10, marginTop: 20 }}>

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Alert,
   Image,
@@ -17,7 +17,7 @@ import { useThemeColor } from "@/presentation/theme/hooks/useThemeColor";
 
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-//import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 
 import { useCameraStore } from "@/presentation/store/useCameraStore";
 
@@ -32,6 +32,10 @@ export default function CameraScreen() {
   const [selectedImage, setSelectedImage] = useState<string>();
 
   const cameraRef = useRef<CameraView>(null);
+
+  useEffect(() => {
+    onRequestPermissions();
+  }, []);
 
   const onRequestPermissions = async () => {
     try {
@@ -108,7 +112,7 @@ export default function CameraScreen() {
     router.dismiss();
   };
 
-  const onPictureAccepted = async () => {
+  /*   const onPictureAccepted = async () => {
     if (!selectedImage) return;
 
     await MediaLibrary.createAssetAsync(selectedImage);
@@ -116,6 +120,31 @@ export default function CameraScreen() {
     addSelectedImage(selectedImage);
 
     router.dismiss();
+  }; */
+
+  const onPictureAccepted = async () => {
+    if (!selectedImage) return;
+
+    if (!mediaPermission?.granted) {
+      const { status } = await requestMediaPermission();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permiso requerido",
+          "No podemos guardar la imagen sin acceso a la galería."
+        );
+        return;
+      }
+    }
+
+    try {
+      const asset = await MediaLibrary.createAssetAsync(selectedImage);
+      await MediaLibrary.createAlbumAsync("MiApp", asset, false);
+      addSelectedImage(selectedImage);
+      router.dismiss();
+    } catch (error) {
+      console.log("Error al guardar imagen:", error);
+      Alert.alert("Error", "No se pudo guardar la imagen.");
+    }
   };
 
   const onRetakePhoto = () => {
@@ -123,8 +152,8 @@ export default function CameraScreen() {
   };
 
   const onPickImages = async () => {
-    /* const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: "images",
       quality: 0.5,
       aspect: [4, 3],
       // allowsEditing: true,
@@ -136,7 +165,7 @@ export default function CameraScreen() {
 
     result.assets.forEach((asset) => {
       addSelectedImage(asset.uri);
-    }); */
+    });
 
     router.dismiss();
   };
@@ -161,20 +190,18 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
-        <ShutterButton onPress={onShutterButtonPress} />
+      <CameraView
+        ref={cameraRef}
+        style={styles.camera}
+        facing={facing}
+      ></CameraView>
+      <ShutterButton onPress={onShutterButtonPress} />
 
-        <FlipCameraButton onPress={toggleCameraFacing} />
+      <FlipCameraButton onPress={toggleCameraFacing} />
 
-        {/* TODO:  GalleryButton */}
-        <GalleryButton onPress={onPickImages} />
+      <GalleryButton onPress={onPickImages} />
 
-        <ReturnCancelButton onPress={onReturnCancel} />
-
-        {/* <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity> */}
-      </CameraView>
+      <ReturnCancelButton onPress={onReturnCancel} />
     </View>
   );
 }
